@@ -1,0 +1,184 @@
+조건부 렌더링 React에서는 원하는 동작을 캡슐화하는 컴포넌트를 만들 수 있다. 
+
+이렇게 하면 애플리케이션의 상태에 따라서 컴포넌트 중 몇 개만을 렌더링할 수 있다. 
+
+function UserGreeting(props){
+    return <h1>Welcome!</h1>
+}
+fucntion GuestGreeting(props){
+    return <h1>Please sign up.</h1>
+}
+
+function Greeting(props){
+    const isLoggedIn = props.isLoggedIn;
+    if(isLoggedIN){
+        return <UserGreeting />;
+    }
+    retrun <GuestGreeting />;
+}
+
+ReactDOM.render(
+    //try changing to isLoggedIN={true}:
+    <Greeting isLoggedIn={false} />
+    document.getElementById('root')
+)
+//Greeting의 isLoggedIn의 props가 false냐 true냐에 따라서 인사말이 달라짐 
+
+
+
+    로그아웃과 러그인 버튼을 나타내는 두 컴포넌트
+
+    fucntion LoginButton(props){
+        return (
+            <button onClick={props.onClick}/>
+            Login
+            </button>
+        )
+    }
+
+    function LogoutButton(props){
+        return(
+            <button onClick={props.onClick}>
+            Logout
+            </button>
+        );
+    }
+
+    아래의 예시에서는 LoginControl이라는 유상태 컴포넌트를 만든다. 
+
+    이컴포넌트는 현재 상태에 맞게 <LoginButton/>이나 <LogoutButton/>을 렌더링한다. 또한 이전 에시에서의 <Greeting/>또한 렌더링한다.
+
+
+    class LoginControl extends React.Component{
+        constructor(props){
+            super(props);
+            this.handleLoginClick = this.handleLoginClick.bind(this);
+            this.handleLogoutClick = this.handleLogoutClick.bind(this);
+            this.state = {isLoggedIn: false};
+        }
+        handleLoginClick(){
+            this.setState({isLoggedIn: true});
+        }
+        handleLogoutClick(){
+            this.setState({isLoggedIn: false});
+        }
+    }
+    reder(){
+        const isLoggedIn = this.state.isLoggedIn;
+        let button;
+        if (isLoggedIn){
+            button = <LogoutButton onClick={this.handleLogoutClikc}/>;
+        }else{
+            button = <LoginButton onClick={this.handleLoginClick}/>;
+        }
+    }
+    return (
+        <div>
+            <Greeting isLoggedIn={isLoggedIn} />
+            {button}
+        </div>
+    );
+    }
+    }
+    ReactDOM.render(
+        <LoginControl />,
+        document.getElementById('root')
+    );
+
+    변수를 선언하고 if를 사용해서 조건부로 렌더링하는 것도 좋은 방법이지만 더 짧게 사용하고 싶을 때가 있다. 
+
+
+    논리 연산자로 if를 인라인으로 표현해보자 .
+
+    function mailbox(props){
+        const unreadMessages = props.unreadMessages;
+        return (
+            <div>
+                <h1>Hello!</h1>
+                {unreadMessages.length> 0 && 
+                <h2>you have {unreadMessages.length} unread messages.</h2>
+                }
+            </div>
+        );
+        const messages = ['React', 'Re: React', 'Leact'];
+        ReactDOM.render(
+            <Mailbox unreadMessages={messages} />,
+            document.getElementById('root')
+        );
+    }
+
+    js에서 true && expression은 항상 expression으로 평가되고
+    
+     false && expression은 항상 false로 평가된다. 
+
+    //표현식(Expression)과 문장(Statement)
+
+    /*
+    표현식은 값을 만들어낸다 표현식은 값 하나로 귀결되는 바바스크립트 코드 조각(snippet)이다. (가변적)
+    const dontMove = 1; //Statement
+    Move * 4 // Expression 
+
+    */
+
+    따라서 && 뒤의 엘리먼트는 조건이 true일때 출력이 된다. 
+    ( falsy표현식을 반환하면 여전히 && 뒤에 있는 표현식은 건너뛰지만 falsy 표현식이 반환된다는 것에 주의)
+
+
+    조건부 연산자로 If-else 구문 인라인으로 표현하기 
+
+    엘리먼트를 조건부로 렌더링하는 다른 방법은 조건부 연산자
+    
+    condition ? ture: flase(삼항연산자)
+
+    render(){
+        const isLoggedIn = this.state.isLoggedIn;
+        return (
+            <div>
+            the user is <b>{isLoggedIn ? 'currently' : 'not'}</b> logged in.
+            //isLoggedIn이 참이면 currently를 낫이면 not을 반환
+        );
+    }
+
+
+    컴포넌트가 렌더링하는 것을 막기
+
+    다른 컴포넌트에 의해 렌더링될 때 컴포넌트 자체를 숨기고 싶을 때가 있다. 이때는 렌더링 결과를 출력하는 대신 null을 반환하면 해결할 수 있다. 
+
+
+    function WarningBanner(props){
+        if(!props.warn){
+            return null;
+        }
+    }
+    return (
+        <div className="{waring">
+        Wargin!
+        </div>
+    );
+    }
+    class Page extends React.Component {
+        constructor(props){
+            super(props);
+            this.state = {showWarning: true};
+            this.handleToggleClick=this.handleToggleClick.bind(this);
+        }
+        handleToggleClick(){
+            this.setState(state =>({
+                showWarning: !state.showWarning
+            }));
+        }
+        render(){
+            return (
+                <div>
+                    <WarningBanner warn={this.state.showWarning} />
+                    <button onClick={this.handleToggleClick}>
+                    {this.state.showWaring ? 'Hide' ; 'Show'}
+                    </button>
+                </div>
+            );
+        }
+    }
+    ReactDOM.render(
+        <Page />,
+        document.getElementById('root')
+    )

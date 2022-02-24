@@ -1,0 +1,95 @@
+React는 사용자 인터페이스를 만들기 위한 javascript 라이브러리이다. 
+
+    온라인 플레이 그라운드
+    React 온라인 코드 편집기 소개
+    CodePen, CodeSandbox, Stackblitz
+
+
+    React개요
+
+    목표
+    Bable, Webpack, JSX, 구성 요소, props, state, lifecycle, realted terms
+
+    React - React 최상위 API
+    React DOM - DOM 전용 메소드 추가
+    Babel  -   오래된 브라우저에서 ES6+를 사용할 수 있게 해주는 js컴파일러 
+
+
+    Inside the return, we're going to put what looks like a simple HTML element. Note that we're not returning a string here, so don't use quotes around the element. this is called JSX, and we'll learn more about it soon. 
+    returen안에 간단한 html요소를 볼수 있다. 여기서는 문자열을 반환하지 않으므로 요소 주위에 따옴표를 사용하지 않는다. 이것을 JSX라고 하며 자세히 알아보자 
+
+
+    React DOM 메서드를 사용하여 생성한 클래스를 HTML의 div에 render()하자
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Hello React!</title>
+
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      class App extends React.Component {
+        render() {
+          return <h1>Hello world!</h1>
+        }
+      }
+
+      ReactDOM.render(<App />, document.getElementById('root'))
+    </script>
+  </body>
+</html>
+
+
+............................
+                npx create-react-app x(파일명) 를 터미널에 입력하는 것으로 초기설정을 간편하게 끝낼 수 있다. 
+
+                프로젝트 구조를 살펴보자
+                /public             
+                /src
+                /node_modules
+                /gitignoer,
+                /README
+                /package.json
+
+
+                파일을 임폴트 받아서 사용하기 (컴포넌트나 리엑트 기능들을 호출 받아서 쓴다(재사용성))
+
+                import React from 'react'
+                import ReactDOM from 'react-dom'
+                import './index.css'
+
+
+
+    JSX: HTML + JS이다. 
+    
+
+    const heading = <h1 className="site-Name">Hello eveyone</h1>
+    >>same things
+
+    const heading = React.createElement('h1', {className: 'site-Name'}, 'Hello everyone')
+
+
+    JSX는 js에 더 가깝기에 차이점이 있다.
+
+    class대신 className을 쓴다
+    JSX의 속성과 메서드는 camelCase를 써야 한다. onclick > onClick 
+    자동 닫힘 태그가 있다 <div /> === <div></div>
+    js표현식은 변수, 함수 및 속성을 포함하여 중괄호를 사용하여 JSX 내부에 포함될 수도 있다. 
+
+    const name = "tania"
+    const heading = <h1> Hello, {name}</h1>
+
+
+
+
+    props 
+    데이터를 처리하는 방법이며 속성과 상태를 사용하여 처리한다. 

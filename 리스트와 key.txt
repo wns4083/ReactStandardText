@@ -1,0 +1,139 @@
+리스트와 Key 
+
+js에서 list를 어떻게 변환시키는지 살펴보자 
+
+const numbers=[1,2,3,4,5];
+cons doubled = numbers.map((number)=> number*2);
+console.log(doubled);
+
+
+
+여러개의 컴포넌트 렌더링하기 
+
+엘리먼트 모음을 만들고 중괄호 {}를 이용하여 JSX에 포함 
+
+const numbers = [1,2,3,4,5];
+const listItems = numbers.map((number)=> <li>{number}</li>);
+
+listItems 배열을 ul엘리먼트 안에 포함하고 DOM에 렌더링 
+ReactDOM.render(
+    <ul>{listItems}</ul>,
+    document.getElementById('root')
+);
+이 코드는 1부터 5까지 숫자로 이루어진 리스트를 보여준다. 
+
+
+numbers배열을 받아서 순서 없는 엘리먼트 리스트를 출력하는 컴포넌트로 리팩토링 
+
+
+
+function NubmerList(props){
+    const numbers = props.numbers;
+    const listItem = numbers.map((number)=> 
+    <li>{number}</li>
+    );
+    return (
+        <ul>{listItem}</ul>
+    );
+}
+const numbers = [1,2,3,4,5];
+ReactDOM.render(
+    <NumberList numbers={numbers} />
+    document.getElementById('root')
+);
+
+이 코드를 실행하면 리스트의 각 항목에 key를 넣어야 한다는 경고가 표시된다. 
+
+key는 엘리먼트 리스트를 만들 떄 포함해야하는 특수한 문자열 어트리뷰트이다. 
+
+>>해결
+
+const listItem = numbers.map((number)=>
+    <li key={number.toString()}>
+    {number}
+    </li>
+);
+return (
+    <ul>{listItem}</ul>
+);
+}
+
+const todoItems = todos.map((todo)=>
+    <li key={todo.id}>
+    {todo.text}
+    </li>
+);
+
+key를 선택하는 가장 좋은 방법은 리스트의 다른 항목들 사이에서 해당 항목을 고유하게 식별할 수 있는 문자열을 사용하는 것이다. 대부분의 경우 데이터의 ID를 key로 사용한다. 
+
+렌더링한 항목에 대한 안정적인 ID가 없다면 최후의 수단으로 인덱스를 key로 사용할 수 있따. 
+
+const todoItems = todos.map((todo, index)=>
+    <li key={index}>
+        {todo.text}
+    </li>
+)
+항목의 순서가 바뀔 수 있는 경우 key에 인덱스를 사용하는 것은 권장하지 않는다. (성능저하나 state 문제가 생길 수 있다. 리스트 항목에 명시적으로 key를 지정하지 않으면 리엑트는 기본적으로 인덱스를 키로 사용한다. )
+
+key로 컴포넌트 추출하기 
+
+키는 주변 배열의 context에서만 의미가 있다. 
+
+listItem 컴포넌트를 추출한 경우 ListItem 안에 li  엘리먼트가 아니라 배열 <ListItem />엘리먼트가 key를 가져야 한다. 
+
+
+function ListItem(props){
+    return <li> {props.value}</li>;
+}
+function NubmerList(props){
+    const numbers = porps.numbers;
+    const listItems = numbers.map((number)=>
+    <ListItem key={number.toString()} value={number} />
+    );
+    return (
+        <ul>
+            {listItem}
+        </ul>
+    );
+}
+
+const numbers = [1,2,3,4,5];
+ReactDOM.render(
+    <NumberList numbers= {numbers} />,
+    document.getElementById('root')
+);
+
+map() 함수 내부에 있는 엘리먼트에 key를 넣어주는 게 좋다. 
+
+key는 배열 안에서 형제 사이에서 고유해야 하고 전체 범위에서 고유할 필요는 없다. (다른 배열을 만들 때 동일한 key를 사용할 수 있다. )
+
+
+컴포넌트에서 key와 동일한 값이 필요하면 다른 이름의 prop으로 명시적으로 전달한다.
+
+const content = posts.map((post)=>
+<post
+    key={post.id}
+    id={post.id}
+    title={post.title}
+/>
+);
+post컴포넌트는 props.id를 읽을 수 있지만 props.key는 읽을 수 없다. 
+
+
+
+JSX에 map()포함 시키기 
+
+
+function NumberList(props){
+    const numbers =props.numbers;
+    return (
+        <ul>
+            {numbers.map((number)=>
+                <ListItem key={number.toString()}
+                          value={number} />
+            )}
+        </ul>
+    );
+}
+
+이방식을 사용하면 코드가 깔끔해지만 이 방식을 남발하지 않는 것이 좋다. 

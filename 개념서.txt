@@ -1,0 +1,667 @@
+JSX
+
+    React에서는 본질적으로 렌더링 로직이 UI로직 (이벤트가 처리되는 방식, 시간에 따라 state가 변하는 방식, 화면에 표시하기 위해 데이터가 준비되는 방식 등)과 연결된다. 
+
+    React는 별도의 파일에 마크업과 로직을 넣어 기술을 인위적으로 분리하는 대신, 둘 다 포함하는 컴포넌트로 느슨하게 연결된 유닛으로 분리한다. 
+
+
+    JSX에 표현식 포함하기 
+
+    const name = 'jhon';
+    const element = <h1>{name}</h1>
+    
+    JSX의 중괄호 안에 유효한 모든 js표현식을 넣을 수 있다. 
+
+    function formatName(user){
+        return user.firstName + ' ' + user.lastName;
+    }
+    const user = {
+        firstName: 'Happy',
+        lastName: 'Enjoy'
+    };
+    const element = (
+        <h1> hello, {formatName(user)}!</h1>
+    )
+
+
+    JSX도 표현식이다
+    컴파일이 끝나면 JSX표현식이 정규 js함수 호출이 되고 js객체로 인식이 된다.
+    즉, JSX를 if구문 및 for loop 안에 사용하고, 변수에 할당하고, 인자로서 받아들이고, 함수로부터 반환할 수 있는 것이다. 
+
+    function getGreeting(user){
+        if(user){
+            return <h1>hello, {formatName(user)}!</h1>
+        }
+    }
+
+
+    JSX속성 정의
+    어트리뷰트에 따옴표를 이용해 문자열 리터럴을 정의할 수 있다. 
+    const element = <a href="https://www.reactjs.org">link</a>;
+    중괄호를 사용하여 어트리뷰트에 js표현식을 삽입할 수 있다. 
+    const element = <img src={user.avatarUrl}</img>
+    어트리뷰트에 js표현식을 삽입할 때 중괄호 주변에 따옴표를 입력하지 않는다.
+    (따옴표 (문자열 값에 사용) 또는 중괄호(표현식에 사용) 중 하나만 사용하고, 동일한 어트리뷰트에 두 가지를 동시에 사용하면 안된다. )
+
+    class는 className으로 바꿔서 쓴다. 
+    <div/>로 자체 닫음 할 수 있다. 
+
+    JSX는 주입공격을 방지한다??
+
+    const title = response.potentialllMaliciousInput;
+    //이것은 안전합니다. 
+    const element = <h1>{title}</h1>
+    
+    기본적으로 React DOM은 JSX에 삽입된 모든 값을 렌더링하기 전에 이스케이프 하므로 애플리케이션에서 명시적으로 작성되지 않는 내용은 주입되지 않는다. 모든 항목은 렌더링 되기전에 문자열로 변환된다. 이런 특성을 통해 XSS(cross-site-scripting) 공격을 방지할 수 있다. 
+
+
+    JSX는 객체를 표현한다. 
+    
+    Babel은 JSX를 React.createElement() 호출로 컴파일한다. 
+
+    두 예시는 동일하다 
+
+    const element = (
+        <h1 className="greeting">
+        hello, react!
+        </h1>
+    );
+    const element = React.createElement(
+        'h1',
+        {className: 'greeing'},
+        'hello, react!'
+    );
+
+    React.createElement()는 버그가 없는 코드를 작성하는 데 도움이 되도록 몇 가지 검사를 수행하며, 기본적으로 다음과 같은 객체를 생성한다. 
+
+    //다음 구조는 단순화된 것.
+    const element = {
+        type: 'h1',
+        props: {
+            className: 'greeting',
+            children: 'hello, react!'
+        }
+    }
+
+    이러한 객체를 React element라고 하며 화면에 보고 싶은 것을 나타내는 표현이라 생각하면 된다. React는 이 객체를 읽어서, DOM을 구성하고 최신 상태로 유지하는 데 사용한다. 
+
+
+
+
+
+    -----------------------------엘리먼트 렌더링---------------------------------
+    엘리먼트는 React 앱의 가장 작은 단위이다. 
+
+    const element = <h1> hello, world </h1>;
+
+    브라우저 DOM 엘리먼트와 달리 React 엘리먼트는 일반 객체(plain object)이며 쉽게 생성할 수 있다. React DOM은 react 엘리먼트와 일치하도록 DOM을 업데이트 한다. 
+
+    **컴포넌트와 엘리먼트와 혼동할 수 있다. 엘리먼트는 컴포넌트의 구성 요소이다. 
+
+
+    DOM에 엘리먼트 렌더링 하기
+
+    HTML 파일 어딘가에 div가 있다고 가정하자 
+
+    <div id="root"></div>
+    이 안에 들어가는 모든 엘리먼트를 React DOM 에서 관리하기 때문에 이것을 "root" DOM노드라고 부른다. 
+
+    일반적으로 REact로 구현된 애플리케이션은 하나의 루트 DOM노드가 있다. 
+    기존 앱에 통합하려는 경우 원하는 만큼 많은 수의 독립된 루트 DOM노드가 있을 수 있다. 
+
+    React 엘리먼트를 루트 DOM 노드에 렌더링하려면 둘 다 ReactDOM.render()로 전달하면 된다.
+
+    const element = <h1>hello, world</h1>;
+    ReactDOM.render(element, document.getElementById('root'));
+
+
+    렌더링 된 엘리먼트 업데이트 하기
+
+
+    React 엘리먼트는 불변객체이다. (생성 후 그 상태를 바꿀 수 없는 객체)
+    엘리먼트를 생성한 이후에는 해당 엘리먼트의 자식이나 속성을 변경할 수 없다. 
+
+    지금까지 소개한 내용을 바탕으로 UI를 업데이트하는 유일한 방법은 새로운 엘리먼트를 생성하고 이를 ReactDOM.render()로 전달하는 것이다. 
+
+    Ex 
+    function tick(){
+        const element = (
+            <div>
+            <h1>hello, react!</h1>
+            <h2>What is Time? {new Date().toLocaleTimeString()}.</h2>
+            </div>
+        );
+        ReactDOM.render(element, document.getElementById('root'));
+    }
+    setIntervale(tick, 1000);
+
+
+    위 함수는 setInterval() 콜백을 이용해 초마다 ReactDOM.render()를 호출한다. 
+    주의 
+    React앱은 ReactDOM.render()를 한 번만 호출한다. 다음은 어떻게 컴포넌트가 캡슐화 되는지 보자. 
+
+
+    변경된 부분만 업데이트하기 
+    ReactDOM은 해당 엘리먼트와 그 자식 엘리먼트를 이전의 엘리먼트와 비교하고 DOM을 원하는 상태로 만드는데 필요한 경우에만 DOM을 업데이트한다. 개발자 도구를 이용해 살펴보면 이를 확인할 수 있다. 
+
+
+
+
+    -------------------------컴포넌트와 프랍스(Component and Props)---------------------
+
+
+    컴포넌트를 통해 UI를 재사용 가능한 개별적인 여러 조각으로 나누고 각 조각을 개별적으로 살펴볼 수 있다. 
+
+
+    컴포넌트를 정의하는 방법 
+    fucntion Welcome(props){
+        return <h1>hello, {props.name}</h1>;
+    }
+    이 함수는 데이터를 가진 하나의 props 객체 인자를 받은 후 React 엘리먼트를 반환하므로 유효한 React컴포넌트이다. 이러한 컴포넌트는 함수이기 때문에 함수 컴포넌트라고 호칭한다. 
+
+
+    ES6 Class를 사용하여 컴포넌트를 정의해보자. 
+    class Welcome extends React.Component {
+        render(){
+            return <h1>Hello, {this.props.name}</h1>;
+        }
+    }
+
+    React의 관점으로 두가지 유형의 컴포넌트는 동일하다. 
+
+
+    컴포넌트 렌더링
+    이전까지는 DOM 태그만을 사용해 React 엘리먼트를 나타내었다. 
+
+    const element =<div/>;
+
+    REact 엘리먼트는 사용자 정의 컴포넌트로도 나타낼 수 있다.
+    const element = <Welecom name="Sara" />;
+
+    React가 사용자 정의 컴포넌트로 작성한 엘리먼트를 발견하면 JSX어트리뷰트와 자식을 해당 컴포넌트에 단일 객체로 전달한다. 이 객체를 "props"라고 한다. 
+
+
+    function Welecome(props){
+        return <h1> HEllo, {props.name}</h1>
+    }
+    const element = <Welcome name="Sara"/>;
+    ReactDOM.render(
+        element,
+        document.getElementById('root')
+    )
+    위 예시에서 일어나는 것들
+    1. <Welcome name="Sara" /> 엘리먼트로 ReactDOM.render()를 호출한다. 
+    2. React는 {name: 'Sara'}를 props로 하여 Welcome 컴포넌트를 호출한다. 
+    3. Welcome 컴포넌트는 결과적으로 <h1>hello, Sara</h1> 엘리먼트를 반환한다.
+    4. React DOM은 <h1>Hello, Sara</h1>엘리먼트와 일치하도록 DOM을 효율적으로 업데이트한다. 
+    ---컴포넌트 이름은 항상 대문자로 시작한다. -----규칙이다----
+
+
+
+
+    ---------------------------컴포넌트합성------------------------
+
+
+    컴포넌트는 자신의 출력에 다른 컴포넌트를 참조할 수 있다. 
+    
+    컴포넌트 추출
+function Comment(props) {
+  return (
+    <div className="Comment">
+      <div className="UserInfo">
+        <img className="Avatar"
+          src={props.author.avatarUrl}
+          alt={props.author.name}
+        />
+        <div className="UserInfo-name">
+          {props.author.name}
+        </div>
+      </div>
+      <div className="Comment-text">
+        {props.text}
+      </div>
+      <div className="Comment-date">
+        {formatDate(props.date)}
+      </div>
+    </div>
+  );
+}
+
+    이 컴포넌트는 author, text, 및 date를 props로 받은 후 소셜 미디어 웹사이트의 코멘트를 나타낸다. 이 컴포넌트의 구성요소들이 모두 중첩구조로 이루어져 있어 변경하기 어려울 수 있고, 각 구성요소를 개별적으로 재상요하기도 힘들다. 여기서 몇 가지 컴포넌트를 추출해보자.
+
+
+
+    function Avatar(props){
+        return (
+            <img className="Avatar"
+            src={props.user.avatarUrl}
+            alt={props.user.name}
+            />
+        )
+    }
+
+    Avartar는 자신이 comment 내에서 랜더링 된다는 것을 알 필요가 없다. 따라서 props의 이름을 author에서 더욱 일반화된 user로 변경하겠다. 
+
+    props의 이름은 사용될 context가 아닌 컴포넌트 자체의 관점에서 짓는 것을 권장한다. 
+
+
+    변경후 Comment
+
+    function Comment(props) {
+  return (
+    <div className="Comment">
+      <div className="UserInfo">
+        <Avatar user={props.author} />    ///src={props.author.avatarUrl}
+                                          ///alt={props.author.name}
+        <div className="UserInfo-name">
+          {props.author.name}
+        </div>
+      </div>
+      <div className="Comment-text">
+        {props.text}
+      </div>
+      <div className="Comment-date">
+        {formatDate(props.date)}
+      </div>
+    </div>
+  );
+}
+
+
+ 다음으로 Avatar 옆에 사용자의 이름을 렌더링하는 UserInfo 컴포넌트를 추출
+
+ function UserInfo(props){
+     return (
+        <div className="userInfo">
+            <Avatar user={props.user}/>
+            <div className="UserInfo-name">
+            {props.user.name}
+            </div>
+        </div>
+     );
+ }
+
+
+ >>Comment(props) 
+function Comment(props) {
+  return (
+    <div className="Comment">
+      <UserInfo user={props.author} />
+      <div className="Comment-text">
+        {props.text}
+      </div>
+      <div className="Comment-date">
+        {formatDate(props.date)}
+      </div>
+    </div>
+  );
+}
+
+comment가 더 단순해 졌다. 
+
+
+
+
+
+----------------------props는 읽기 전용이다 ---------------------
+
+함수 컴포넌트나 클래스 컴포넌트 모두 컴포넌트의 자체 props를 수정해서는 안된다. 
+
+
+순수함수
+function sum(a,b){
+    return a+b;
+}
+입력값을 바꾸려 하지 않고 항상 동일한 입력값에 대해 동일한 결과를 반환 = 순수 함수
+
+
+function widtdraw(account, amount){
+    account.total -= amout;
+}
+>>React는 매우 유연하지만 한 가지 엄격한 규칙이 있다. 
+모든 React 컴포넌트는 자신의props를 다룰 때 반드시 순수 함수처럼 동작해야 한다. 
+
+
+이를 위해서 state를 사용해 위 규칙을 위반하지 않고 사용자 액션, 네트워크 응답 및 다른 요소에 대한 응답으로 시간에 따라 자신의 출력값을 변경할 수 있다. 
+
+
+
+
+
+-------------------------------State and Lifecycle------------------------------------------
+
+
+EX 시계 예시를 다시 보자 
+
+function tick(){
+    const element=(
+        <div>
+            <h1>Hello, React!</h1>
+            <h2>It is {new Date().toLocaleTimeString()}.</h2>
+        </div>
+    );
+    ReactDOM.render(
+        element,
+        document.getElementById('root')
+    );
+}
+setInterval(tick, 1000);
+
+
+이 섹션에서 clock 컴포넌트를 완전히 재사용하고 캡슐화하는 방법을 배울 것이다. 이 컴포넌트는 스스로 타이머를 설정하고 매초 스스로 업데이트 할 것이다. 
+
+
+캡슐화하는 것으로 시작하자 
+
+fucntion Clock(props){
+    return (
+        <div>
+            <h1>Hello, world!</h1>
+            <h2>It is {props.date.toLocaleTimeString()}.</h2>
+        </div>
+    );
+}
+function tick(){
+    ReactDOM.render(
+        <Clock date={new Date()} />,
+        document.getElementById('root')
+    );
+}
+setInterval(tick, 1000);
+
+여기에서 중요한 요소가 누락되어 있다. Clock이 타이머를 설정하고 매초 UI를 업데이트 하는 것이 Clock의ㅣ 구현 세부사항이 되어야 한다. 
+
+이상적으로 한번만 코들르 작성하고 Clock이 스스로 업데이트하도록 하자 
+
+ReactDOM.render(
+    <Clock />,
+    document.getElementById('root')
+);
+
+이것을 구현하기 위해서 Clock 컴포넌트에 "state"를 추가해야 한다. 
+
+state는 props와 유사하지만, 비공개이며 컴포넌트에 의해 완전히 제어된다. 
+
+
+
+
+함수에서 클래스로 변환하기
+
+    다섯 단계로 Clock과 같은 함수 컴포넌트를 클래스로 변환할 수 있다. 
+
+    1. React.Component를 확장하는 동일한 이름의 ES6 class를 생성
+    2. render() 라고 불리는 빈 메서드를 추가
+    3. 함수 내용을 render() 메서드 안으로 옮긴다. 
+    4. render() 내용 안에 있는 props를 this.props로 변경한다. 
+    5. 남아있는 빈 함수 선언을 삭제
+
+
+    class Clock extends React.Component{
+        render(){
+            return(
+                <div>
+                    <h1>Clock</h1>
+                    <h2>It is {this.props.date.toLocaleTimeString()}.</h2>
+                </div>
+            )
+        }
+    }
+
+    clock은 이제 함수가 아닌 클래스로 정의 된다. 
+
+    render 메서드는 업데이트가 발생할 때마다 호출되지만, 같은 DOM노드로 <Clock/>을 렌더링하는 경우 Clock클래스의 단일 인스턴스만 사용된다. 이것은 로컬 state와 생명주기 메서드와 같은 부가적인 기능을 사용할 수 있게 해준다. 
+
+
+
+    클래스에 로컬 State 추가하기 
+
+
+
+    세 단계에 걸쳐서 date를 props에서 state로 이동해 보겠습니다.
+
+render() 메서드 안에 있는 this.props.date를 this.state.date로 변경합니다.
+class Clock extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+초기 this.state를 지정하는 class constructor를 추가합니다.
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+여기서 어떻게 props를 기본 constructor에 전달하는지 유의해주세요.
+
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+클래스 컴포넌트는 항상 props로 기본 constructor를 호출해야 합니다.
+
+<Clock /> 요소에서 date prop을 삭제합니다.
+ReactDOM.render(
+  <Clock />,
+  document.getElementById('root')
+);
+타이머 코드는 나중에 다시 컴포넌트로 추가하도록 하겠습니다.
+
+결과는 다음과 같습니다.
+
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <Clock />,
+  document.getElementById('root')
+);
+
+
+        생명주기 메스드를 클래스에 추가하기 
+
+
+        많은 컴포넌트가 있는 애플리케이션에서 컴포넌트가 삭제될 때 해당 컴포넌트가 사용중이던 리소스를 확보하는 것이 중요하다. 
+
+        clock이 처음 DOM에 렌더링 될 때마다 타이머를 설정하려고 한다. 이것을 마운팅이라 한다. 
+
+        clock에 의해 생성된 DOM이 삭제될 때마다 타이머를 해제하려고 한다. 이것을 언마운팅이라고 한다. 
+        이러한 메서드들은 생명주기 메서드라고 불린다. 
+
+        componentDidMount() 메서드는 컴포넌트 출력물이 DOM에 렌더링 된 후에 실행됩니다. 이 장소가 타이머를 설정하기에 좋은 장소입니다.
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
+  }
+
+
+  this (this.timerID)에서 어떻게 타이머 ID를 저장하는지 주의하자 
+
+  this.props 가 REact에 의해 스스로 설정되고 this.state가 특수한 의미가 있지만, 타이머 ID와 같이 데이터 흐름 안에 포함되지 않는 어떤 항목을 보관할 필요가 있다면 자유롭게 클래스에 수동으로 부가적인 필드를 추가해도 된다. 
+
+  componenetWillUnmount() 생명주기 메서드 안에 있는 타이머를 분해해 보자
+
+  componenetWillUnmount(){
+      clearInterval(this.timerID);
+  }
+
+  마지막으로 clock 컴포넌트가 매초 작동하도록 tick()이라는 메서드를 구현해보자 
+
+  class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      date: new Date()
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <Clock />,
+  document.getElementById('root')
+);
+
+
+이 코드의 진행을 순서대로 요약해보자
+
+1. <Clock /> 가 ReactDOM.render()로 전달되었을 때 React는 Clock 컴포넌트의 constructor를 호출한다. Clock이 현재 시각을 표시해야 하기 때문에 현재 시각이 포함된 객체로 this.state를 초기화한다. 나중에 이 state를 업데이트 할 것이다. 
+
+2. React는 Clock 컴포넌트의 render() 메서드를 호출한다. 이를 통해 React는 화면에 표시되어야 할 내용을 알게 된다. React는 Clock의 렌더링 출력값을 일치시키기 위해 DOM을 업데이트한다. 
+
+3. Clock 출력값이 DOM에 삽입되면, React는 componentDidMount() 생명주기 메서드를 호출한다. 그 안에서 Clock 컴포넌트는 매초 컴포넌트의 tick() 메서드를 호출하기 위한 타이머를 설정하도록 브라우저에 요청한다. 
+
+4. 매초 브라우저가 tick() 메서드를 호출한다. 그 안에서 Clock 컴포넌트는 setState()에 현재 시각을 포함하는 객체를 호출하면서 UI업데이트를 진행한다. setState() 호출 덕분에 React는 state가 변경된 것을 인지하고 화면에 표시될 내용을 알아내기 위해 render() 메서드를 다시 호출한다. 이때 render() 메서드 안의 this.state.date가 달라지고 렌더링 출력값은 업데이트된 시각을 포함한다. React는 이에 따라 DOM을 업데이트 한다.
+
+5. Clock 컴포넌트가 DOM으로부터 한 번이라도 삭제된 적이 있다면 React는 타이머를 멈추기 위해 componentWillUnmount()생명주기 메서드를 호출한다. 
+
+
+
+
+
+------------------State를 올바르게 사용하기------------------------
+
+
+setState() 에 대해 알아야 할 세 가지
+
+직접 State를 수정하지 않는다. 
+
+this.state.commnet = 'Hello';
+//Wrong
+this.setState({comment: 'Hello'});
+
+this.state를 지정할 수 있는 유일한 공간은 바로 constructor 
+
+
+State 업데이트는 비동기적일 수 있따. 
+
+React는 성능을 위해 여러 setState() 호출을 단일 업데이트로 한꺼번에 처리할 수 있다. 
+
+this.props와 this.state가 비동기적으로 업데이트될 수 있기 때문에 다음 state를 계산할 때 해당 값에 의존해서는 안된다. 
+
+예를 들어 다음 코드는 카운터 업데이트에 실패할 수 있다. 
+
+//wrong 
+this.setState({
+    counter: this.state.counter + this.props.increment,
+});
+이를 수정하기 위헤ㅐ 객체보다는 함수를 인자로 사용하는 다른 형태의 setState()를 사용한다. 그 함수는 이전 state를 첫 번째 인자로 받아들이고, 업데이트가 적용된 시점의 props를 두 번째 인자로 받아들일 것이다. 
+
+//correct
+this.setSate((state, props)=>({
+    counter: state.counter + props.increment
+}));
+
+일반적인 함수
+this.setState(function(state, props){
+    return{
+        counter: state.counter + props.increment
+    };
+});
+
+
+
+state업데이트는 병합된다. 
+
+setState를 호출할 때 React는 제공한 객체를 현재 state로 병합한다. 
+
+예를 들어 state는 다양한 독립적인 변수를 포함 
+
+constructor(props){
+    super(props);
+    this.state = {
+        posts: [],
+        commnet: []
+    };
+}
+
+별도의 setState() 호출로 이러한 변수를 독립적으로 업데이트할 수 있따. 
+
+  componentDidMount() {
+    fetchPosts().then(response => {
+      this.setState({
+        posts: response.posts
+      });
+    });
+
+    fetchComments().then(response => {
+      this.setState({
+        comments: response.comments
+      });
+    });
+  }
+
+
+   데이터는 아래로 흐른다. 
+
+    부모 컴포넌트나 자식 컴포넌트 모두 특정 컴포넌트가 유상태인지 무상태인지 알 수 없고 그들이 함수나 클래스로 정의되었는지에 대해서 관심을 가질 필요가 없다. 
+
+    이때문에 state는 종종 로컬 또는 캡슐화라고 불린다. state가 소유하고 설정한 컴포넌트 이외에는 어떠한 컴포넌트에도 접근할 수 없다. 
+
+    컴포넌트는 자신의 state를 자식 컴포넌트에 props로 전달할 수 있다. 
+
+    <FormattedDate date={this.state.date} />
+
+    FormattedDate 컴포넌트는 date를 자신의 props로 받을 것이고 이것이 Clock의 state로부터 왔는지, Clock의 props에서 왔는지 수동으로 입력한 것인지 알지 못한다. 
+
+    function FormattedDate(props){
+        return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+    }
+
+
+    일반적으로 이를 하향식 또는 반방향식 데이터 흐름이라고 한다. 모든 state는 항상 특정한 컴포넌트가 소유하고 있으며 그 state로부터 파생된 UI 또는 데이터는 오직 트리구조에서 자신의 아래에 있는 컴포넌트에만 영향을 미친다. 
+
+    트리구조가 props들의 폭포라고 상상하면 각 컴포넌트의 state는 임의의 점에서 만나지만 동시에 아래로 흐르는 부가저긴 수원이라고 할 수 있다. 
